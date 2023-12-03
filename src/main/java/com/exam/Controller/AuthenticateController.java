@@ -5,7 +5,6 @@ import com.exam.Entities.JwtRequest;
 import com.exam.Entities.JwtResponse;
 import com.exam.Services.Implement.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,9 +12,12 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RestController
  public class AuthenticateController{
@@ -47,9 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
 
         UserDetails userDetails=this.userDetailsService.loadUserByUsername(jwtRequest.getUsername());
         String token=this.jwtUtil.generateToken(userDetails);
-        JwtResponse response = JwtResponse.builder()
-                .token(token).build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(new JwtResponse(token));
 
     }
 
@@ -68,6 +68,11 @@ import org.springframework.web.bind.annotation.RestController;
         {
             throw  new Exception("Invalid Credentials"+e.getMessage());
         }
+    }
+    @GetMapping("/current-user")
+    public UserDetails getCurrentUser(Principal principal)
+    {
+        return this.userDetailsService.loadUserByUsername(principal.getName());
     }
 
  }

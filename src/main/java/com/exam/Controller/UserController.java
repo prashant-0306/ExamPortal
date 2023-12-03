@@ -4,10 +4,13 @@ import com.exam.Entities.Role;
 import com.exam.Entities.User;
 import com.exam.Entities.UserRole;
 import com.exam.Services.UserService;
+import com.exam.helper.UserFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -31,18 +34,32 @@ public class UserController {
             roles.add(userRole);
             return this.userService.createUser(user,roles);
     }
-    @GetMapping("/{userName}")
-    public User getUser(@PathVariable("userName") String username)
-    {
-        return this.userService.getUser(username);
+    @GetMapping("/{username}")
+    public User getUser(@PathVariable("username") String username) {
+        return userService.getUser(username);
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable("userId") Long id)
-    {
-        this.userService.deleteUser(id);
+    @GetMapping("/getAll")
+    public List<User> getAllUser() {
+        return userService.getAllUser();
+    }
+
+    @PutMapping("/{id}")
+    public User updateUser(@RequestBody User user, @PathVariable("id") Long id) {
+        return userService.updateUser(user, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable("id") Long id) {
+        userService.deleteUser(id);
     }
 
 
+    @ExceptionHandler(UserFoundException.class)
+    public ResponseEntity<?> exceptionHandler(UserFoundException ex) {
+        return ResponseEntity.ok(ex.getMessage());
+    }
 
 }
+
+

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 @Service
 
@@ -64,15 +66,29 @@ public class UserServiceImpl implements UserService {
 //            userRole.setUser(user);
 //            roles.add(userRole);
 
+
+
     @Override
     public User getUser(String username) {
-        return this.userRepository.findByUsername(username);
+        return userRepository.findByUsername(username);
     }
 
     @Override
-    public void deleteUser(Long userId) {
-        this.userRepository.deleteById(userId);
+    public List<User> getAllUser() {
+        return userRepository.findAll();
     }
 
+    @Override
+    public User updateUser(User user,Long id) {
+        Optional<User> data=userRepository.findById(id);
+        User _user=data.get();
+        _user.setUsername(user.getUsername());
+        return userRepository.save(_user);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
 
 }
